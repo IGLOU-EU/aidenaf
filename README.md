@@ -3,7 +3,7 @@
 [![License: GPL 3.0](https://img.shields.io/badge/Pull_request-Open-green.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![License: GPL 3.0](https://img.shields.io/badge/License-GPL_3.0_or_later-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-Ce projet a pour but d’offrir à toute la possibilité de trouver son code d’activités française, sans avoir à comprendre ou maitriser les complexités des nomenclatures. Ainsi que de lui indiquer à quel organisme s’adresser pour ces formalités.    
+Ce projet a pour but d’offrir à toutes personnes la possibilité de trouver son code d’activités française, sans avoir à comprendre ou maitriser les complexités des nomenclatures. Ainsi que de lui indiquer à quel organisme s’adresser pour ces formalités.    
 Dans un premier temps, l’indication des organismes à qui s’adresser sera uniquement disponibles pour les auto-entrepreneurs.    
 
 Pour soutenir ce projet Opensource et à destination du bien commun :
@@ -35,7 +35,7 @@ Exemple de représentation possible `10.39B`.
 
 #### Format du code NAFA
 Le code NAFA se base sur la nomenclature du code NAF, il en reprend les divisions, les groupe et classe.    
-Deux différences existent dans le fichier fourni parle publiant, mais ne gênant pas l’interprétation du code.
+Deux différences existent dans le fichier fourni par le publiant, mais ne gênant pas l’interprétation du code.
 - En aucun cas il ne comporte de `.`
 - Il se finit par deux lettres et non pas une
 
@@ -75,4 +75,4 @@ et ce afin de les différencier des fichiers conçus manuellement.
 - Formatage des datas `CC BY-SA`
 
 ## Remerciements
-Un grand merci à Mylène Portal, Employée du  Greffe du Tribunal de Commerce de Paris, qui a pris sur son temps libre pour être consultante sur ce projet.
+Un grand merci à [Mylène Portal](https://www.linkedin.com/in/mylene-p-906113196/), Employée du  Greffe du Tribunal de Commerce de Paris, qui a pris sur son temps libre pour être consultante bénévole sur ce projet.
