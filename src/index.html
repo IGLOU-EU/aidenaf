@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<!-- Only html page with bootstrap -->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="last-modified" content=”2022-02-17”>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, viewport-fit=cover">
+
+    <title>My website</title>
+
+    <meta name="theme-color" content="#0071eb">
+    <meta name="author" content="Adrien Kara">
+    <meta name="description" content="{{index . 5}}">
+
+    <!-- SEO optimisation part -->
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="My website">
+    <meta property="og:description" content="{{index . 5}}">
+    <meta property="og:url" content="{{.Site.URL}}">
+    <meta property="og:site_name" content="My website">
+    <meta property="og:image" content="{{index . 5}}">
+    <meta property="og:image:secure_url" content="{{index . 5}}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="{{index . 5}}">
+    <meta name="twitter:title" content="My website">
+    <meta name="twitter:site" content="@adrienkara">
+    <meta name="twitter:image" content="{{index . 5}}">
+    <meta name="twitter:creator" content="@adrienkara">
+
+    <link rel="canonical" href="{{.Site.URL}}">
+    <link rel="icon" type="image/png" href="{{index . 5}}">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        details {
+            position: relative;
+        }
+
+        .loading::before,
+        .loading::after {
+            content: "";
+            position: absolute;
+        }
+
+        .loading::before {
+            width: 3em;
+            height: 3em;
+            display: block;
+            border-width: .5em .5em 0 .25em;
+            border-style: dotted;
+            border-color: var(--bs-light);
+            border-radius: 50%;
+            border-right-color: transparent;
+            z-index: 1;
+            top: calc(50% - 1.5em);
+            left: calc(50% - 1.5em);
+            animation: rotate 1s infinite linear;
+        }
+
+        .loading::after {
+            background-color: var(--bs-gray-dark);
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            opacity: .5;
+        }
+
+        .custom-select {
+            display: inline-block;
+            padding: .375rem 1.75rem .375rem .75rem;
+            line-height: 1.5;
+            color: #495057;
+            background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right .75rem center;
+            background-size: 8px 10px;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .input-group-text {
+            border-radius: .25rem 0 0 .25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main" class="container">
+        <header class="py-3 mb-3 border-bottom">
+            <div class="jumbotron">
+                <h1>
+                    Hello, world!
+                </h1>
+                <p>
+                    This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.
+                </p>
+                <p>
+                    <a class="btn btn-primary btn-large" href="#">Learn more</a>
+                </p>
+            </div>
+        </header>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div id="data_secteurs" class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="secteurs">Secteur</label>
+                    </div>
+                    <select id="secteurs" class="data_option custom-select form-control" onchange="updateSelect(this)">
+                        <option value="">En attente ...</option>
+                    </select>
+                </div>
+                <div id="data_divisions" class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="division">Division</label>
+                    </div>
+                    <select id="division" class="data_option custom-select form-control" onchange="updateSelect(this)" disabled>
+                        <option value="">En attente ...</option>
+                    </select>
+                </div>
+                <div id="data_groupes" class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="groupe">Groupe</label>
+                    </div>
+                    <select id="groupe" class="data_option custom-select form-control" onchange="updateSelect(this)" disabled>
+                        <option value="">En attente ...</option>
+                    </select>
+                </div>
+                <div id="data_classes" class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="classe">Classe</label>
+                    </div>
+                    <select id="classe" class="data_option custom-select form-control" onchange="codeResult(this)" disabled>
+                        <option value="">En attente ...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h2>
+                    Heading
+                </h2>
+                <p>
+                    Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+                </p>
+                <p>
+                    <a class="btn" href="#">View details »</a>
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                    </div>
+                    <div class="col-md-6">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <ul>
+                    <li class="list-item">
+                        Lorem ipsum dolor sit amet
+                    </li>
+                    <li class="list-item">
+                        Consectetur adipiscing elit
+                    </li>
+                    <li class="list-item">
+                        Integer molestie lorem at massa
+                    </li>
+                    <li class="list-item">
+                        Facilisis in pretium nisl aliquet
+                    </li>
+                    <li class="list-item">
+                        Nulla volutpat aliquam velit
+                    </li>
+                    <li class="list-item">
+                        Faucibus porta lacus fringilla vel
+                    </li>
+                    <li class="list-item">
+                        Aenean sit amet erat nunc
+                    </li>
+                    <li class="list-item">
+                        Eget porttitor lorem
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul>
+                    <li class="list-item">
+                        Lorem ipsum dolor sit amet
+                    </li>
+                    <li class="list-item">
+                        Consectetur adipiscing elit
+                    </li>
+                    <li class="list-item">
+                        Integer molestie lorem at massa
+                    </li>
+                    <li class="list-item">
+                        Facilisis in pretium nisl aliquet
+                    </li>
+                    <li class="list-item">
+                        Nulla volutpat aliquam velit
+                    </li>
+                    <li class="list-item">
+                        Faucibus porta lacus fringilla vel
+                    </li>
+                    <li class="list-item">
+                        Aenean sit amet erat nunc
+                    </li>
+                    <li class="list-item">
+                        Eget porttitor lorem
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <dl>
+                    <dt>
+                        Description lists
+                    </dt>
+                    <dd>
+                        A description list is perfect for defining terms.
+                    </dd>
+                    <dt>
+                        Euismod
+                    </dt>
+                    <dd>
+                        Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.
+                    </dd>
+                    <dd>
+                        Donec id elit non mi porta gravida at eget metus.
+                    </dd>
+                    <dt>
+                        Malesuada porta
+                    </dt>
+                    <dd>
+                        Etiam porta sem malesuada magna mollis euismod.
+                    </dd>
+                    <dt>
+                        Felis euismod semper eget lacinia
+                    </dt>
+                    <dd>
+                        Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                    </dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <dl>
+                    <dt>
+                        Description lists
+                    </dt>
+                    <dd>
+                        A description list is perfect for defining terms.
+                    </dd>
+                    <dt>
+                        Euismod
+                    </dt>
+                    <dd>
+                        Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.
+                    </dd>
+                    <dd>
+                        Donec id elit non mi porta gravida at eget metus.
+                    </dd>
+                    <dt>
+                        Malesuada porta
+                    </dt>
+                    <dd>
+                        Etiam porta sem malesuada magna mollis euismod.
+                    </dd>
+                    <dt>
+                        Felis euismod semper eget lacinia
+                    </dt>
+                    <dd>
+                        Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <h2>
+                    Heading
+                </h2>
+                <p>
+                    Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+                </p>
+                <p>
+                    <a class="btn" href="#">View details »</a>
+                </p>
+            </div>
+        </div>
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <p class="col-md-4 mb-0 text-muted">© 2021 Company, Inc</p>
+
+            <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+                <svg class="bi me-2" width="40" height="32">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+            </a>
+
+            <ul class="nav col-md-4 justify-content-end">
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="/js/manager.js"></script>
+</body>
+
+</html>
