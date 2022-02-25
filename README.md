@@ -41,6 +41,14 @@ Deux différences existent dans le fichier fourni par le publiant, mais ne gêna
 
 Exemple de représentation possible `1039AP`.    
 
+### Professions libérales      
+**Publication**: Ministère de l’Economie, de l’Industrie et du Numérique  
+**Licence**: Licence Ouverte / Open Licence version 2.0      
+**Lien**: https://www.data.gouv.fr/fr/datasets/les-professions-liberales/       
+**Data**: https://www.data.gouv.fr/fr/datasets/r/c98687e6-0d80-476f-9ccc-d66a379c5c7e       
+
+Ce cas est particulier, ne disposant pas de nomenclature ou de listing. Il est une construction manuelle, faite depuis une liste etalab du `Ministère de l'Economie, de l'Industrie et du Numérique`. Chaque profession libérale a un code NAF générique qui lui est attribué [Voir section NAF](#nomenclature-dactivités-française-naf-ape).   
+
 ## Structures du projet
 Les fichiers html pres-rendu portent l’extension courte `htm` 
 et ce afin de les différencier des fichiers conçus manuellement.
