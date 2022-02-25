@@ -12,6 +12,15 @@ Pour soutenir ce projet Opensource et à destination du bien commun :
 - Participer au code et a la correction des textes
 - Offrir un soutien financier et assurer la pérennité du projet
 
+## ToDo
+- [ ] Definition des CFE
+- [ ] Affichage des informations CFE
+- [ ] Formatage du fichier et parsing des Professions libérales
+- [ ] Selecteur des Professions libérales
+- [ ] Interface graphique
+- [ ] Fiche d’hebergement
+- [ ] Section Mentions-légales
+
 ## Nomenclatures 
 ### Nomenclature d’activités française (NAF / APE) 
 **Publication**: l’ANSII     
