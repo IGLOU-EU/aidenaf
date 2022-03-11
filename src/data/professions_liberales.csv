@@ -1,93 +1,96 @@
 # Secteur;# Dénomination;# Réglementée;# NAF;# CFE
-Technique et cadre de vie;Accompagnateur de groupe;;;
-Technique et cadre de vie;Accompagnateur de moyenne montagne;;;
-Droit;Administrateur judiciaire;;;
-Technique et cadre de vie;Agent général d’assurances;;;
-Technique et cadre de vie;Agent privé de recherche;;;
-Technique et cadre de vie;Animateur;;;
-Technique et cadre de vie;Architecte d’intérieur décorateur;;;
-Technique et cadre de vie;Architecte réglementé;;;
-Technique et cadre de vie;Autre conseil;;;
-Technique et cadre de vie;Autre expert;;;
-Technique et cadre de vie;Autre professeur sportif;;;
-Droit;Avocat;;;
-Santé;Chirurgien dentiste;;;
-Technique et cadre de vie;Commissaire aux comptes;;;
-Droit;Commissaire-priseur judiciaire;;;
-Technique et cadre de vie;Concepteur redacteur;;;
-Technique et cadre de vie;Conférencier;;;
-Technique et cadre de vie;Conseil artistique ou littéraire;;;
-Technique et cadre de vie;Conseil commercial;;;
-Technique et cadre de vie;Conseil de gestion;;;
-Technique et cadre de vie;Conseil en informatique;;;
-Technique et cadre de vie;Conseil en publicité;;;
-Technique et cadre de vie;Conseil en relations publiques;;;
-Technique et cadre de vie;Conseil financier;;;
-Technique et cadre de vie;Conservateur-restaurateur;;;
-Technique et cadre de vie;Coordinateur de travaux;;;
-Technique et cadre de vie;Journaliste - Correspondant de presse ;;;
-Technique et cadre de vie;Créateur d’art;;;
-Technique et cadre de vie;Designer;;;
-Technique et cadre de vie;Dessinateur artistique;;;
-Technique et cadre de vie;Dessinateur technique;;;
-Technique et cadre de vie;Ecrivain public;;;
-Technique et cadre de vie;Educateur;;;
-Santé;Ergothérapeute;;;
-Technique et cadre de vie;Expert agricole;;;
-Technique et cadre de vie;Expert Automobile;;;
-Technique et cadre de vie;Expert-comptable;;;
-Technique et cadre de vie;Expert forestier;;;
-Technique et cadre de vie;Expert immobilier;;;
-Technique et cadre de vie;Expert maritime;;;
-Technique et cadre de vie;Expert-comptable et commissaire aux comptes;;;
-Droit;Expert près des tribunaux;;;
-Technique et cadre de vie;Formateur;;;
-Technique et cadre de vie;Géometre expert;;;
-Technique et cadre de vie;Graphologue;;;
-Droit;Greffier des tribunaux de commerce;;;
-Technique et cadre de vie;Guide de montagne;;;
-Droit;Huissier de justice;;;
-Santé;Infirmier;;;
-Technique et cadre de vie;Ingénieur conseil;;;
-Technique et cadre de vie;Maître d’oeuvre;;;
-Droit;Mandataire judiciaire à la protection des personnes;;;
-Droit;Mandataire judiciaire à la liquidation des entreprises;;;
-Santé;Masseur-kinésithérapeute;;;
-Santé;Médecin généraliste;;;
-Santé;Médecin spécialiste;;;
-Technique et cadre de vie;Métreur et économiste de la construction;;;
-Technique et cadre de vie;Moniteur de ski;;;
-Santé;Naturopathe;;;
-Droit;Notaire;;;
-Santé;Orthophoniste;;;
-Santé;Orthoptiste;;;
-Santé;Ostéopathe;;;
-Santé;Pédicure-podologue;;;
-Santé;Pharmacien biologiste;;;
-Technique et cadre de vie;Professeur;;;
-Technique et cadre de vie;Professeur de danse;;;
-Technique et cadre de vie;Professeur de dessin;;;
-Technique et cadre de vie;Professeur de langue;;;
-Technique et cadre de vie;Professeur de musique;;;
-Technique et cadre de vie;Professeur de tennis;;;
-Technique et cadre de vie;Professeur de yoga;;;
-Santé;Psychanalyste;;;
-Santé;Psychologue;;;
-Santé;Psychomotricien;;;
-Santé;Psychothérapeute;;;
-Santé;Sage-femme;;;
-Technique et cadre de vie;Sténotypiste;;;
-Technique et cadre de vie;Styliste;;;
-Technique et cadre de vie;Technicien;;;
-Technique et cadre de vie;Traducteur interprète;;;
-Technique et cadre de vie;Urbaniste Paysagiste;;;
-Santé;Vétérinaire;;;
-Technique et cadre de vie;Intermédiaire de commerce;;;
-Technique et cadre de vie;Autres Maîtrise des langues et de l’écriture;;;
-Technique et cadre de vie;Autres Conception, maîtrise d’oeuvre et aménagement du territoire;;;
-Technique et cadre de vie;Autres Technique du sport et du jeu;;;
-Santé;Autres Santé;;;
-Technique et cadre de vie;Autres Accompagnement;;;
-Santé;Autres thérapeutes;;;
-Technique et cadre de vie;Conseils en propriété industrielle;;;
-Santé;Pharmacien d’officine;;;
+Technique et cadre de vie;Accompagnateur de groupe;NR;7990Z;URSSAF
+Technique et cadre de vie;Accompagnateur de moyenne montagne;R;9319Z;URSSAF
+Droit;Administrateur judiciaire;R;6910Z;
+Technique et cadre de vie;Agent général d’assurances;NR;6622Z;URSSAF
+Technique et cadre de vie;Agent privé de recherche;R;8030Z;URSSAF
+Technique et cadre de vie;Animateur;NR;9329Z;URSSAF
+Technique et cadre de vie;Architecte d’intérieur décorateur;NR;7410Z;URSSAF
+Technique et cadre de vie;Architecte réglementé;R;7111Z;URSSAF
+Technique et cadre de vie;Autre conseil;NR;7022Z;URSSAF
+Technique et cadre de vie;Autre expert;R;7022Z;URSSAF
+Technique et cadre de vie;Autre professeur sportif;R;8551Z;URSSAF
+Technique et cadre de vie;Autres Accompagnement;R;8899Z;URSSAF
+Technique et cadre de vie;Autres Conception;NR;3320C;URSSAF
+Technique et cadre de vie;Autres Maîtrise des langues et de l’écriture;NR;8559B;URSSAF
+Santé;Autres Santé;R;8690F;URSSAF
+Technique et cadre de vie;Autres Technique du sport et du jeu;R;9319Z;URSSAF
+Santé;Autres thérapeutes;R;8690F;URSSAF
+Droit;Avocat;R;6910Z;URSSAF
+Santé;Chirurgien dentiste;R;8623Z;URSSAF
+Technique et cadre de vie;Commissaire aux comptes;R;6920Z;URSSAF
+Droit;Commissaire-priseur judiciaire;R;6910Z;URSSAF
+Technique et cadre de vie;Concepteur redacteur;NR;7311Z;URSSAF
+Technique et cadre de vie;Conférencier de voyage;R;7990Z;URSSAF
+Technique et cadre de vie;Guide conférencier;R;7990Z;URSSAF
+Technique et cadre de vie;Conseil artistique ou littéraire;NR;9003B;URSSAF
+Technique et cadre de vie;Conseil commercial;NR;7022Z;URSSAF
+Technique et cadre de vie;Conseil de gestion;NR;7022Z;URSSAF
+Technique et cadre de vie;Conseil en informatique;NR;6202A;URSSAF
+Technique et cadre de vie;Conseil en publicité;NR;7311Z;URSSAF
+Technique et cadre de vie;Conseil en relations publiques;NR;7021Z;
+Technique et cadre de vie;Conseil financier;R;7022Z;URSSAF
+Technique et cadre de vie;Conseils en propriété industrielle;R;7022Z;URSSAF
+Technique et cadre de vie;Conservateur-restaurateur;NR;7420Z;URSSAF
+Technique et cadre de vie;Coordinateur de travaux;NR;7490A;URSSAF
+Technique et cadre de vie;Créateur d’art;NR;9003A;URSSAF
+Technique et cadre de vie;Designer;NR;7410Z;
+Technique et cadre de vie;Dessinateur artistique;NR;9003A;URSSAF
+Technique et cadre de vie;Dessinateur technique;NR;7112B;URSSAF
+Technique et cadre de vie;Ecrivain public;NR;9609Z;URSSAF
+Technique et cadre de vie;Educateur canin;NR;9609Z;URSSAF
+Technique et cadre de vie;Educateur spécialisé;R ;8899A;
+Santé;Ergothérapeute;R;8690E;
+Technique et cadre de vie;Expert agricole;R;7490B;
+Technique et cadre de vie;Expert Automobile;R;6621Z;URSSAF
+Technique et cadre de vie;Expert forestier;R;7490B;URSSAF
+Technique et cadre de vie;Expert immobilier;NR;6831Z;
+Technique et cadre de vie;Expert maritime;NR;7490B;
+Droit;Expert près des tribunaux;R;6910Z;
+Technique et cadre de vie;Expert-comptable;R;6920Z;
+Technique et cadre de vie;Expert-comptable et commissaire aux comptes;R;6920Z;
+Technique et cadre de vie;Formateur;NR;8559A;URSSAF
+Technique et cadre de vie;Géometre expert;R;7112A;URSSAF
+Technique et cadre de vie;Graphologue;NR;9609Z;URSSAF
+Droit;Greffier des tribunaux de commerce;R;6910Z;
+Technique et cadre de vie;Guide de montagne;R;9319Z;URSSAF
+Droit;Huissier de justice;R;6910Z;
+Santé;Infirmier;R;8690D;
+Technique et cadre de vie;Ingénieur conseil;NR;7112B;URSSAF
+Technique et cadre de vie;Intermédiaire de commerce;R;4619B;URSSAF
+Technique et cadre de vie;Journaliste - Correspondant de presse ;R;6391Z;
+Technique et cadre de vie;Maître d’oeuvre;NR;7490A;
+Droit;Mandataire judiciaire à la liquidation des entreprises;R;6910Z;
+Droit;Mandataire judiciaire à la protection des personnes;R;6910Z;
+Santé;Masseur-kinésithérapeute;R;8690E;
+Santé;Médecin généraliste;R;8621Z;
+Santé;Médecin spécialiste;R;8622C;
+Technique et cadre de vie;Métreur et économiste de la construction;NR;7490A;URSSAF
+Technique et cadre de vie;Moniteur de ski;R;8551Z;URSSAF
+Santé;Naturopathe;NR;8690F;URSSAF
+Droit;Notaire;R;6910Z;
+Santé;Orthophoniste;R;8690E;URSSAF
+Santé;Orthoptiste;R;8690E;URSSAF
+Santé;Ostéopathe;R;8690E;URSSAF
+Santé;Pédicure-podologue;R;8690E;URSSAF
+Santé;Pharmacien biologiste;R;8690B;
+Santé;Pharmacien d’officine;R;4773Z;
+Technique et cadre de vie;Professeur;R;8559B;URSSAF
+Technique et cadre de vie;Professeur de danse;R;8552Z;URSSAF
+Technique et cadre de vie;Professeur de dessin;NR;8552Z;URSSAF
+Technique et cadre de vie;Professeur de langue;NR;8552Z;URSSAF
+Technique et cadre de vie;Professeur de musique;NR;8552Z;URSSAF
+Technique et cadre de vie;Professeur de tennis;R;8551Z;URSSAF
+Technique et cadre de vie;Professeur de yoga;NR;8551Z;URSSAF
+Santé;Psychanalyste;R;8690F;URSSAF
+Santé;Psychologue;R;8690F;URSSAF
+Santé;Psychomotricien;R;8690F;URSSAF
+Santé;Psychothérapeute;R;8689F;URSSAF
+Santé;Sage-femme;R;8690D;
+Santé;Sophrologue;NR;8690F;URSSAF
+Technique et cadre de vie;Sténotypiste;NR;8299Z;URSSAF
+Technique et cadre de vie;Styliste;NR;8299Z;URSSAF
+Technique et cadre de vie;Technicien;NR;3312Z;URSSAF
+Technique et cadre de vie;Traducteur interprète;NR;7430Z;URSSAF
+Technique et cadre de vie;Urbaniste Paysagiste;NR;8130Z;URSSAF
+Santé;Vétérinaire;R;7500Z;
