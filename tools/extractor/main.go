@@ -1,8 +1,3 @@
-// Copyright 2022 Iglou.eu.
-// Written by Adrien Kara <adrien@iglou.eu>
-// Use of this source code is governed by GPL-3.0-or-later
-// license that can be found in the LICENSE file.
-
 package main
 
 import (
@@ -10,13 +5,11 @@ import (
 	"context"
 	"encoding/csv"
 	"errors"
-	"flag"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"strings"
 	"time"
 	"unicode"
@@ -24,288 +17,480 @@ import (
 	xlslib "github.com/extrame/xls"
 )
 
-type OFile struct {
-	ID   string
-	File *os.File
+type Data struct {
+	Naf      Sections `json:"naf"`
+	Liberale Sections `json:"liberale"`
+
+	// Nafa helper for find Secteur for a given Division
+	Helper Helpers `json:"-"`
 }
 
-type Naf struct {
-	Secteur  OFile
-	Division OFile
-	Groupe   OFile
-	Classe   OFile
+type Sections []Section
+type Section struct {
+	Reglemente   bool     `json:"reglemente"`
+	Titre        string   `json:"titre"`
+	Valeur       string   `json:"valeur"`
+	Nomenclature string   `json:"nomenclature"`
+	Selecteur    string   `json:"selecteur"`
+	CfeMorale    string   `json:"cfe-morale"`
+	CfePhysique  string   `json:"cfe-physique"`
+	Subsec       Sections `json:"subsec"`
 }
 
-type NafRows []NafRow
-type NafRow struct {
-	Code string
-	Name string
-}
-
-type SelectOption struct {
-	Value string
-	NomID string
-	Text  string
-	Type  string
+type Helpers []Helper
+type Helper struct {
+	Secteur   string
+	Divisions []string
 }
 
 const (
-	SourceNaf  = "https://www.insee.fr/fr/statistiques/fichier/2120875/int_courts_naf_rev_2.xls"
-	SourceNafa = "https://opendata.hauts-de-seine.fr/explore/dataset/entreprises-artisanales-par-code-nafa/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B  "
-)
+	SourceNaf     = "https://www.insee.fr/fr/statistiques/fichier/2120875/int_courts_naf_rev_2.xls"
+	SourceNafa    = "https://opendata.hauts-de-seine.fr/explore/dataset/entreprises-artisanales-par-code-nafa/download/?format=csv&timezone=Europe/Berlin&lang=fr&use_labels_for_header=true&csv_separator=%3B"
+	SourceLiberal = "../../src/data/professions_liberales.csv"
 
-var (
-	output string
-
-	NafFileSecteurs  = "secteurs.htm"
-	NafFoldDivisions = "divisions"
-	NafFoldGroupes   = "groupes"
-	NafFoldClasses   = "classes"
+	Output = "../../public/data"
 )
 
 func main() {
-	flag.StringVar(&output, "o", "", "Output dir option (required)")
-	flag.Parse()
-
-	if output == "" {
-		log.Panicln("You must to provide an output directory")
-	}
-
-	// Initialise data folder var
-	NafFileSecteurs = path.Join(output, NafFileSecteurs)
-	NafFoldDivisions = path.Join(output, NafFoldDivisions)
-	NafFoldGroupes = path.Join(output, NafFoldGroupes)
-	NafFoldClasses = path.Join(output, NafFoldClasses)
-
-	// Clear old data
-	if err := os.Remove(NafFileSecteurs); err != nil {
-		log.Panicln(err)
-	}
-	if err := os.RemoveAll(NafFoldDivisions); err != nil {
-		log.Panicln(err)
-	}
-	if err := os.RemoveAll(NafFoldGroupes); err != nil {
-		log.Panicln(err)
-	}
-	if err := os.RemoveAll(NafFoldClasses); err != nil {
+	// Clear old data if any
+	os.RemoveAll(Output)
+	if err := os.Mkdir(Output, os.ModePerm); err != nil && !os.IsExist(err) {
 		log.Panicln(err)
 	}
 
-	// create new data folder
-	if err := os.Mkdir(NafFoldDivisions, os.ModePerm); err != nil {
-		log.Panicln(err)
-	}
-	if err := os.Mkdir(NafFoldGroupes, os.ModePerm); err != nil {
-		log.Panicln(err)
-	}
-	if err := os.Mkdir(NafFoldClasses, os.ModePerm); err != nil {
-		log.Panicln(err)
-	}
-
-	// Liste des codes
-	// Pour eviter les doublons, peut servir a une futur static api
-	var extracted NafRows
-
-	// Nafa process
-	// A executer en premier pour eviter les doublons fournis par la liste Naf
-	if err := nafaExtractor(extracted); err != nil {
-		log.Panicln(err)
-	}
+	// Data storage
+	var data Data
 
 	// Naf process
 	// La fiche naf donne aussi la structure des secteurs, divisions et groupes
-	if err := nafExtractor(extracted); err != nil {
+	if err := data.nafBuild(SourceNaf); err != nil {
 		log.Panicln(err)
 	}
+
+	// Nafa process
+	if err := data.nafaBuild(SourceNafa); err != nil {
+		log.Panicln(err)
+	}
+
+	// Liberale process
+	if err := data.liberaleBuild(SourceLiberal); err != nil {
+		log.Panicln(err)
+	}
+
+	//
+	data.Naf.toHTM(Output, "")
+	data.Liberale.toHTM(Output, "")
 }
 
-func nafExtractor(extracted NafRows) error {
-	// ID des col xls a exploiter
+// nafBuild is the naf data builder from xls file
+func (data *Data) nafBuild(uri string) (err error) {
+	// xls col index
 	const (
-		NafID = int(iota)
-		NafCode
-		NafName
+		IndexCode = 1
+		IndexName = 2
 	)
 
-	// Telechargement de la nomenclature NAF
-	file, err := requestData(SourceNaf)
+	// Download xls file
+	xlsFile, err := requestData(uri)
+	if err != nil {
+		return
+	}
+
+	// Read and parse xls file
+	// Thanks INSEE for this proprietary file format
+	xls, err := xlslib.OpenReader(bytes.NewReader(xlsFile), "")
 	if err != nil {
 		return err
 	}
 
-	// Traitement du XLS ... Merci l'INSEE
-	xls, err := xlslib.OpenReader(bytes.NewReader(file), "")
-	if err != nil {
-		return err
-	}
-
+	// Only get the first sheet
 	sheet := xls.GetSheet(0)
 	if sheet == nil {
-		return errors.New("no sheet found in xls file")
+		return errors.New("ne sheet fount in xls file at: " + uri)
 	}
 
-	// Enregistrement des data au format htm
-	var out Naf
-
-	// Fichier specifique au secteurs
-	if err := out.Secteur.New(NafFileSecteurs, "", true); err != nil {
-		return err
-	}
-	out.Secteur.File.WriteString("<option disabled selected>Sélectionnez votre Secteur</option>")
-
-	var secteur string
-	for i := 0; i <= (int(sheet.MaxRow)); i++ {
+	// Iterate over row's
+	active := make([]*Section, 3, 3)
+	for i := 0; i <= int(sheet.MaxRow); i++ {
 		row := sheet.Row(i)
-		naf := NafRow{
-			Code: row.Col(NafCode),
-			Name: row.Col(NafName),
+		naf := struct {
+			code string
+			name string
+		}{
+			row.Col(IndexCode),
+			row.Col(IndexName),
 		}
 
-		// Si le code est vide on skip pour eviter tout check
-		if naf.Code == "" {
+		// skip empty naf code
+		if naf.code == "" {
 			continue
 		}
 
-		// Cas specifique des secteurs
-		if strings.HasPrefix(naf.Code, "SECTION") {
-			secteur = naf.Code[8:]
-			_, err := out.Secteur.File.WriteString(
-				SelectOption{
-					Value: naf.Code[8:],
-					NomID: "all",
-					Text:  naf.Name,
-					Type:  "secteur",
-				}.String(),
-			)
-
-			if err != nil {
-				return err
-			}
-
+		// Special case for sector
+		if len(naf.code) > 8 && naf.code[:7] == "SECTION" {
+			// Add new section to Helper list
+			data.Helper = append(data.Helper, Helper{
+				Secteur: naf.code[8:],
+			})
+			// Create new section
+			data.Naf = append(data.Naf, Section{
+				Titre:        naf.name,
+				Valeur:       naf.code[8:],
+				Selecteur:    "naf",
+				Nomenclature: "naf",
+			})
+			// Add new section to active
+			active[0] = &data.Naf[len(data.Naf)-1]
 			continue
 		}
 
-		// Verification du format du code naf
-		if !naf.Normalize() {
+		// Check and normalize naf code
+		if !isNafCode(&naf.code) {
 			continue
 		}
 
-		// Ajout du code a son fichier
-		line := SelectOption{Value: naf.Code, NomID: "all", Text: naf.Name}
-		switch len(naf.Code) {
+		// Set common section values
+		section := Section{
+			Titre:        naf.name,
+			Valeur:       naf.code,
+			Nomenclature: "naf",
+		}
+		// Set section type
+		switch len(naf.code) {
 		// Divisions
 		case 2:
-			if new, err := out.Division.NeedNew(NafFoldDivisions, secteur); err != nil {
-				return err
-			} else if new {
-				out.Division.File.WriteString("<option disabled selected>Sélectionnez votre Division</option>")
-			}
-
-			line.Type = "division"
-			if _, err := out.Division.File.WriteString(line.String()); err != nil {
-				return err
-			}
+			// Add new division to Helper list
+			help := &data.Helper[len(data.Helper)-1]
+			help.Divisions = append(help.Divisions, naf.code)
+			// Create new division
+			section.Selecteur = "division"
+			active[0].Subsec = append(active[0].Subsec, section)
+			// Add new division to active
+			active[1] = &active[0].Subsec[len(active[0].Subsec)-1]
 		// Groupes
 		case 3:
-			if new, err := out.Groupe.NeedNew(NafFoldGroupes, naf.Code[:2]); err != nil {
-				return err
-			} else if new {
-				out.Groupe.File.WriteString("<option disabled selected>Sélectionnez votre Groupe</option>")
-			}
-
-			line.Type = "groupe"
-			if _, err := out.Groupe.File.WriteString(line.String()); err != nil {
-				return err
-			}
+			// Create new groupe
+			section.Selecteur = "groupe"
+			active[1].Subsec = append(active[1].Subsec, section)
+			// Add new groupe to active
+			active[2] = &active[1].Subsec[len(active[1].Subsec)-1]
 		// Classes
 		case 5:
-			// Ajout du code a la liste `extracted`
-			if !extracted.NotExist(naf) {
-				extracted.Add(naf)
-			}
-
-			if new, err := out.Classe.NeedNew(NafFoldClasses, naf.Code[:3]); err != nil {
-				return err
-			} else if new {
-				out.Classe.File.WriteString("<option disabled selected>Sélectionnez votre Classe</option>")
-			}
-
-			line.Type = "classe"
-			line.NomID = "naf"
-			if _, err := out.Classe.File.WriteString(line.String()); err != nil {
-				return err
-			}
+			// Create new class
+			section.Selecteur = "classe"
+			active[2].Subsec = append(active[2].Subsec, section)
 		default:
 			continue
 		}
 	}
 
-	// Fermer les fichiers ouverts
-	out.Secteur.Close()
-	out.Division.Close()
-	out.Groupe.Close()
-	out.Classe.Close()
-
-	return nil
+	return
 }
 
-func nafaExtractor(extracted NafRows) error {
-	// ID de la col du code NAFA
-	const NafaCode = 1
+// nafaBuild is the nafa data builder from csv file
+// The result update or add nafa to naf data structure
+func (data *Data) nafaBuild(uri string) (err error) {
+	// csv col index
+	const (
+		IndexCode = 1
+	)
 
-	// Telechargement de la nomenclature NAFA
-	file, err := requestData(SourceNafa)
+	// Download csv file
+	csvFile, err := requestData(uri)
 	if err != nil {
-		return err
+		return
 	}
 
-	// Traitement du csv
-	csvr := csv.NewReader(bytes.NewReader(file))
-	csvr.Comma = ';'
+	// Read and parse csv file
+	csvReader := csv.NewReader(bytes.NewReader(csvFile))
+	csvReader.Comma = ';'
 
-	// Enregistrement des data au format htm
-	var out Naf
+	// Iterate over row's
+	// start at 1 to skip header
 	for i := 0; ; i++ {
-		row, err := csvr.Read()
-		if err == io.EOF {
+		row, err := csvReader.Read()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			return err
+		}
+
+		// skip first line empty or invalid naf code
+		if i == 0 || len(row) < 3 || len(row[IndexCode]) < 6 {
+			continue
+		}
+
+		// set basic naf values
+		naf := struct {
+			code string
+			name string
+		}{
+			row[IndexCode][:6],
+			row[IndexCode][6:],
+		}
+
+		// Check and normalize naf code
+		if !isNafCode(&naf.code) {
+			continue
+		}
+
+		// Get pointer to group
+		group := data.getGroup(naf.code[:5])
+		if group == nil {
+			log.Println("no group found for naf code: " + naf.code)
+			continue
+		}
+
+		// Update or Set section values
+		ii := group.Subsec.getIndex(naf.code[:5])
+
+		if ii >= 0 {
+			group.Subsec[ii].Titre = naf.name
+			group.Subsec[ii].Valeur = naf.code
+			continue
+		}
+
+		// Create new section
+		group.Subsec = append(group.Subsec, Section{
+			Titre:        naf.name,
+			Valeur:       naf.code,
+			Selecteur:    "classe",
+			Nomenclature: "nafa",
+		})
+	}
+
+	return
+}
+
+// liberaleBuild is the liberale data builder from csv file
+func (data *Data) liberaleBuild(uri string) (err error) {
+	// csv col index
+	const (
+		secteurName = iota
+		denominationID
+		regID
+		codeID
+		cfeID
+	)
+	// Open csv file
+	csvFile, err := os.Open(uri)
+	if err != nil {
+		return
+	}
+	defer csvFile.Close()
+
+	// Read and parse csv file
+	csvReader := csv.NewReader(csvFile)
+	csvReader.Comma = ';'
+
+	// Var for current secteur
+	secteur := struct {
+		id   int
+		name string
+	}{}
+
+	// Iterate over row's
+	// start at 1 to skip header
+	for i := 0; ; i++ {
+		row, err := csvReader.Read()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			return err
+		}
+
+		// skip first or empty line
+		if i == 0 || len(row) < 5 {
+			continue
+		}
+
+		// Check if secteur changed
+		if row[secteurName] != secteur.name {
+			secteur.name = row[secteurName]
+			secteur.id = data.Liberale.getIndex(secteur.name)
+
+			if secteur.id < 0 {
+				data.Liberale = append(data.Liberale, Section{
+					Titre:        secteur.name,
+					Valeur:       secteur.name,
+					Selecteur:    "liberale",
+					Nomenclature: "liberale",
+				})
+				secteur.id = len(data.Liberale) - 1
+			}
+		}
+
+		// Add new classe to secteur
+		classe := Section{
+			Titre:        row[denominationID],
+			Valeur:       row[codeID],
+			Selecteur:    "classe",
+			Nomenclature: "liberale",
+			CfePhysique:  row[cfeID],
+		}
+
+		if row[regID] == "R" {
+			classe.Reglemente = true
+		}
+
+		data.Liberale[secteur.id].Subsec = append(data.Liberale[secteur.id].Subsec, classe)
+	}
+
+	return
+}
+
+// getGroup returns a pointer to a group
+func (data *Data) getGroup(code string) *Section {
+	// Get the section code
+	scode := data.Helper.getSection(code[:2])
+	if scode == "" {
+		return nil
+	}
+
+	// Section index
+	section := data.Naf.getIndex(scode)
+	if section == -1 {
+		return nil
+	}
+
+	// Division index
+	division := data.Naf[section].Subsec.getIndex(code[:2])
+	if division == -1 {
+		return nil
+	}
+
+	// Groupe index
+	groupe := data.Naf[section].Subsec[division].Subsec.getIndex(code[:3])
+	if groupe == -1 {
+		return nil
+	}
+
+	return &data.Naf[section].Subsec[division].Subsec[groupe]
+}
+
+// getIndex returns the index of a section with a given code
+func (sec *Sections) getIndex(code string) (index int) {
+	index = -1
+
+	for i, s := range *sec {
+		if s.Valeur == code {
+			index = i
 			break
 		}
+	}
 
-		// Skip la premiere ligne ou code invalide
-		if i == 0 || len(row) < 3 || len(row[NafaCode]) < 8 {
-			continue
-		}
+	return
+}
 
-		naf := NafRow{
-			Code: row[NafaCode][:6],
-			Name: row[NafaCode][7:],
-		}
+// toHTM write htm selection file from data
+func (sec *Sections) toHTM(path, parent string) (err error) {
+	// If empty return
+	if len(*sec) < 1 {
+		return
+	}
 
-		// Verification du format du code naf
-		if !naf.Normalize() {
-			continue
-		}
-
-		// Ajout du code a la liste `extracted`
-		if !extracted.NotExist(naf) {
-			extracted.Add(naf)
-		}
-
-		// Ajout du code a son fichier
-		line := SelectOption{Value: naf.Code, Type: "classe", NomID: "nafa", Text: naf.Name}
-		if _, err := out.Classe.NeedNew(NafFoldClasses, naf.Code[:3]); err != nil {
+	// Define the output file
+	var out string
+	if parent == "" {
+		out = strings.Join([]string{path, (*sec)[0].Selecteur + ".htm"}, "/")
+	} else {
+		// If not exist create parent folder
+		out = path + `/` + (*sec)[0].Selecteur
+		if err := os.Mkdir(out, os.ModePerm); err != nil && !os.IsExist(err) {
 			return err
 		}
 
-		if _, err := out.Classe.File.WriteString(line.String()); err != nil {
-			return err
+		out = out + `/` + parent + ".htm"
+	}
+
+	// Open output file in write mode
+	file, err := os.OpenFile(out, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	// Write option
+	// default select option
+	file.WriteString("<option disabled selected>Sélectionnez une option</option>")
+	for i := range *sec {
+		s := &(*sec)[i]
+		file.WriteString(s.optionHTM())
+
+		// Write sub section if exist
+		if s.Subsec != nil {
+			s.Subsec.toHTM(path, s.Valeur)
 		}
 	}
 
-	// Fermer le dernier fichier ouvert
-	out.Classe.Close()
+	return
+}
 
-	return nil
+// optionHTM returns the html option for a section
+func (s *Section) optionHTM() string {
+	var fields []string
+
+	fields = append(fields, `value="`+s.Valeur+`"`)
+	fields = append(fields, `data-nomenclature="`+s.Nomenclature+`"`)
+	fields = append(fields, `data-selecteur="`+s.Selecteur+`"`)
+
+	if s.Reglemente {
+		fields = append(fields, `data-reglemente="true"`)
+	}
+
+	if s.CfeMorale != "" {
+		fields = append(fields, `data-cfemorale="`+s.CfeMorale+`"`)
+	}
+
+	if s.CfePhysique != "" {
+		fields = append(fields, `data-cfephysique="`+s.CfePhysique+`"`)
+	}
+
+	return `<option ` + strings.Join(fields, " ") + `>` + s.Titre + `</option>`
+}
+
+// getSection returns the section code for a given division code
+func (h *Helpers) getSection(code string) string {
+	for i := range *h {
+		for _, d := range (*h)[i].Divisions {
+			if d == code {
+				return (*h)[i].Secteur
+			}
+		}
+	}
+
+	return ""
+}
+
+func isNafCode(n *string) bool {
+	// NAF and NAFA codes are between 2 and 6 char
+	if l := len(*n); l < 2 || l > 6 {
+		return false
+	}
+
+	// Clean given code
+	*n = strings.Replace(*n, ".", "", 1)
+	*n = strings.TrimSpace(*n)
+
+	for i, r := range *n {
+		// 4 first char must be a number
+		if i < 4 && unicode.IsDigit(r) {
+			continue
+		}
+
+		// The 5 and 6 char must be a letter
+		if i >= 4 && unicode.IsLetter(r) {
+			continue
+		}
+
+		return false
+	}
+
+	return true
 }
 
 func requestData(url string) (file []byte, err error) {
@@ -331,95 +516,4 @@ func requestData(url string) (file []byte, err error) {
 	defer resp.Body.Close()
 
 	return ioutil.ReadAll(resp.Body)
-}
-
-func (o *OFile) New(p, n string, isFile ...bool) (err error) {
-	// Si un fichier est deja ouvert on le ferme
-	if o.File != nil {
-		o.File.Close()
-	}
-
-	// Si le path n'est pas un fichier
-	if len(isFile) == 0 {
-		p = path.Join(p, n) + ".htm"
-	}
-
-	o.ID = n
-	o.File, err = os.OpenFile(p, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
-
-	return
-}
-
-func (o *OFile) NeedNew(p, id string) (new bool, err error) {
-	if o.ID == id {
-		return
-	}
-
-	return true, o.New(p, id)
-}
-
-func (o *OFile) Close() {
-	if o.File == nil {
-		return
-	}
-
-	o.File.Close()
-}
-
-func (n *NafRow) Normalize() bool {
-	// Les codes NAF et NAFA sont compris entre 2 et 6 char
-	if l := len(n.Code); l < 2 || l > 6 {
-		return false
-	}
-
-	// Suprimer le point ou les espaces possibles
-	n.Code = strings.Replace(n.Code, ".", "", 1)
-	n.Code = strings.TrimSpace(n.Code)
-
-	for i, r := range n.Code {
-		// Les 4 premiers char sont des chiffres
-		if i < 4 && unicode.IsDigit(r) {
-			continue
-		}
-
-		// Char 5 et 6 doivent etre des lettres
-		if i >= 4 && unicode.IsLetter(r) {
-			continue
-		}
-
-		return false
-	}
-
-	return true
-}
-
-func (s SelectOption) String() string {
-	return strings.Join(
-		[]string{
-			`<option value="`,
-			s.Value,
-			`" data-nomenclature="`,
-			s.NomID,
-			`" data-type="`,
-			s.Type,
-			`">`,
-			strings.Title(strings.ToLower(s.Text)),
-			`</option>`,
-		},
-		"",
-	)
-}
-
-func (n *NafRows) NotExist(naf NafRow) bool {
-	for _, nr := range *n {
-		if naf.Code[:5] == nr.Code[:5] {
-			return false
-		}
-	}
-
-	return true
-}
-
-func (n *NafRows) Add(naf NafRow) {
-	*n = append(*n, naf)
 }
