@@ -1,3 +1,7 @@
+**Ce projet est archivé suite à la mise en vigueur de la loi PACTE, au 1 janvier 2023. Il n'a plus de raison d'être avec le guichet unique auprès de l'INPI.**
+
+---
+
 #  [WIP] ⚖️ AideNaf - Aide à la Nomenclature d’activités française
 
 [![License: GPL 3.0](https://img.shields.io/badge/Pull_request-Open-green.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)
@@ -11,15 +15,6 @@ Pour soutenir ce projet Opensource et à destination du bien commun :
 - Le faire savoir si vous trouvez une erreur ou un bug
 - Participer au code et a la correction des textes
 - Offrir un soutien financier et assurer la pérennité du projet
-
-## ToDo
-- [ ] Definition des CFE
-- [ ] Affichage des informations CFE
-- [ ] Formatage du fichier et parsing des Professions libérales
-- [ ] Selecteur des Professions libérales
-- [ ] Interface graphique
-- [ ] Fiche d’hebergement
-- [ ] Section Mentions-légales
 
 ## Nomenclatures 
 ### Nomenclature d’activités française (NAF / APE) 
